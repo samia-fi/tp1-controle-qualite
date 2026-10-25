@@ -244,4 +244,20 @@ def histogramme(mesures: list[float], *, debut: float, pas: float, nb_classes: i
 
     Les mesures hors de [debut, debut + nb_classes * pas[ sont ignorées.
     """
-    raise NotImplementedError("à compléter")
+    
+    classes = [0] * nb_classes
+
+    for mesure in mesures:
+        indice = int(round((mesure - debut) / pas, 10))
+        if 0 <= indice < nb_classes:
+            classes[indice] += 1
+
+    lignes = []
+    for i, nombre in enumerate(classes):
+        bas = round(debut + i * pas, 3)
+        haut = round(debut + (i + 1) * pas, 3)
+        etoiles = "*" * nombre
+        lignes.append(f"[{bas:.3f} ; {haut:.3f}[ {etoiles}")
+
+    return "\n".join(lignes)
+
