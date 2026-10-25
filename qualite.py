@@ -134,12 +134,21 @@ def compter_verdicts(resultats: list[tuple[str, float, str]]) -> tuple[int, int,
 # --- Étape 5 : statistiques et capabilité ---------------------------------------------------------
 def moyenne(*valeurs: float) -> float:
     """Moyenne d'un nombre quelconque de valeurs. Lève ValueError s'il n'y en a aucune."""
-    raise NotImplementedError("à compléter")
+    if not valeurs:
+     raise ValueError("au moins une valeur est nécessaire")
+
+    return sum(valeurs) / len(valeurs)
 
 
 def ecart_type(*valeurs: float) -> float:
     """Écart type d'échantillon (division par n - 1). Lève ValueError avec moins de deux valeurs."""
-    raise NotImplementedError("à compléter")
+    if len(valeurs) < 2:
+     raise ValueError("au moins deux valeurs sont nécessaires")
+
+    m = moyenne(*valeurs)
+    somme_carres = sum((x - m) ** 2 for x in valeurs)
+
+    return (somme_carres / (len(valeurs) - 1)) ** 0.5
 
 
 def capabilite(mesures: list[float], *, nominal: float = NOMINAL, tolerance: float = TOLERANCE) -> tuple[float, float]:
@@ -148,7 +157,26 @@ def capabilite(mesures: list[float], *, nominal: float = NOMINAL, tolerance: flo
     Cp  = largeur de la tolérance / (6 sigma)                  : le procédé est-il assez précis ?
     Cpk = distance de la moyenne à la limite la plus proche / (3 sigma) : est-il bien centré ?
     """
-    raise NotImplementedError("à compléter")
+    if tolerance <= 0:
+        raise ValueError("la tolérance doit être strictement positive")
+
+    if len(mesures) < 2:
+        raise ValueError("au moins deux mesures sont nécessaires")
+
+    sigma = ecart_type(*mesures)
+
+    if sigma == 0:
+        raise ValueError("écart-type nul : capabilité impossible")
+
+    m = moyenne(*mesures)
+    limite_basse = nominal - tolerance
+    limite_haute = nominal + tolerance
+
+    cp = (limite_haute - limite_basse) / (6 * sigma)
+    cpk = min(limite_haute - m, m - limite_basse) / (3 * sigma)
+
+    return round(cp, 2), round(cpk, 2)
+
 
 
 # --- Étape 6 : le rapport -------------------------------------------------------------------------
