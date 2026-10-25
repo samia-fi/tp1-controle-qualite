@@ -12,12 +12,37 @@ def lire_mesure(texte: str) -> float:
     Accepte la virgule ou le point, l'unité "mm" (collée ou non) et les espaces autour.
     Lève ValueError si le texte n'est pas une mesure strictement positive et finie.
     """
-    raise NotImplementedError("à compléter")
+    
+    texte = texte.strip().lower()
+    texte = texte.removesuffix("mm").strip()
+    texte = texte.replace(",", ".")
+
+    try:
+        x = float(texte)
+    except ValueError:
+        raise ValueError(f"mesure invalide : {texte.strip()!r}")
+
+    import math
+    if not math.isfinite(x) or x <= 0:
+        raise ValueError(f"mesure invalide : {texte.strip()!r}")
+
+    return x
+
 
 
 def valider_code(code: str) -> bool:
     """Vrai si le code pièce respecte le format AAA-9999 : trois majuscules, un tiret, quatre chiffres."""
-    raise NotImplementedError("à compléter")
+    
+    return (
+        len(code) == 8
+        and code[:3].isalpha()
+        and code[:3].isascii()
+        and code[:3].isupper()
+        and code[3] == "-"
+        and code[4:].isdigit()
+        and code[4:].isascii()
+    )
+
 
 
 # --- Étape 2 : décider ----------------------------------------------------------------------------
